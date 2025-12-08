@@ -177,8 +177,9 @@ Cargo.lock
 vendor/
 
 # Logs
-logs/
+# logs/ - Commented to allow logs directory structure, but still exclude log files
 *.log
+!logs/.gitkeep
 
 # Temporary files
 *.tmp
