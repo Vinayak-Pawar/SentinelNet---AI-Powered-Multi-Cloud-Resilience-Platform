@@ -50,14 +50,42 @@ async def main():
         logger.info("🎯 Running in demo mode - using mock data and emulators")
 
     try:
-        # Import and start dashboard
+        # Import core components
+        from agents.orchestrator import SentinelNetOrchestrator
+        from agents.gcp_monitor import get_gcp_monitor
+        from agents.communication import initialize_communication
         from dashboard.app import run_dashboard
 
+        # Initialize communication layer
+        logger.info("📡 Initializing communication layer...")
+        comm_manager = await initialize_communication()
+
+        # Initialize orchestrator
+        logger.info("🎯 Initializing SentinelNet orchestrator...")
+        orchestrator = SentinelNetOrchestrator()
+
+        # Initialize GCP monitor
+        logger.info("🔍 Initializing GCP monitor...")
+        gcp_monitor = get_gcp_monitor()
+
+        # Register GCP monitor with orchestrator
+        agent_info = await orchestrator.register_agent(gcp_monitor.agent_info)
+
+        # Start monitoring in background
+        if demo_mode:
+            logger.info("🎮 Starting monitoring in demo mode...")
+            # Start GCP monitoring in background
+            monitor_task = asyncio.create_task(gcp_monitor.start_monitoring())
+        else:
+            logger.info("🔗 Starting real GCP monitoring...")
+            monitor_task = asyncio.create_task(gcp_monitor.start_monitoring())
+
+        # Start dashboard
         logger.info("📊 Starting dashboard...")
         run_dashboard()
 
     except ImportError as e:
-        logger.error(f"❌ Failed to import dashboard: {e}")
+        logger.error(f"❌ Failed to import required modules: {e}")
         logger.info("💡 Make sure all requirements are installed: uv pip install -r requirements.txt")
         sys.exit(1)
     except KeyboardInterrupt:

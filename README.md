@@ -1,32 +1,117 @@
 # SentinelNet: AI-Powered Multi-Cloud Resilience Platform
 
-## 🚀 Overview
+## 🚀 Vision: Intelligent Action on Enterprise Monitoring
 
-SentinelNet is an innovative distributed AI system that monitors cloud services and generates intelligent remediation plans during outages. Unlike traditional monitoring tools that fail when the cloud goes down, SentinelNet uses a hybrid communication architecture to maintain resilience.
+**Datadog alerts you when BigQuery goes down. SentinelNet tells you exactly what to do and does it for you.**
+
+**The Problem:** Teams spend hours investigating alerts and manually executing remediation. During major outages, this costs millions in downtime.
+
+**The Solution:** SentinelNet connects to your existing Datadog monitoring and adds an intelligent action layer powered by LangGraph agents.
+
+**Example Flow:**
+```
+Datadog Alert: "BigQuery US-east-1 High Latency"
+     ↓
+SentinelNet AI Agent: Analyzes alert + infrastructure context
+     ↓
+Intelligent Plan: "Switch to BigQuery US-west-2, update DNS, validate data consistency"
+     ↓
+Human Approval: SRE reviews cost/risk assessment
+     ↓
+Automated Execution: Terraform apply + monitoring + rollback ready
+```
+
+**Unlike pure monitoring tools, SentinelNet transforms alerts into automated, intelligent remediation.**
 
 ## ✨ Key Features
 
-- **Distributed Monitoring**: AI agents across multiple clouds monitoring service health
-- **Intelligent Remediation**: LangGraph-powered agents generate human-validated recovery plans
-- **Hybrid Communication**: Works during cloud outages using P2P networks
-- **Multi-Cloud Support**: Azure + GCP with enterprise-grade security
-- **Offline Dashboard**: PWA that works without internet connectivity
+- **Datadog Integration**: Leverages existing enterprise monitoring infrastructure
+- **Intelligent Action Engine**: Transforms Datadog alerts into executable remediation plans
+- **Multi-Cloud Reconfiguration**: AI agents generate Terraform/ARM templates for failover
+- **Impact Analysis**: Understands application dependencies and cascading effects
+- **Safe Automation**: Human-in-the-loop validation with rollback capabilities
+- **Cost Intelligence**: Automated cost-benefit analysis for reconfiguration decisions
+- **Enterprise Dashboard**: Rich UI for alert triage and remediation approval
+
+## 🔍 Datadog Integration: Monitoring + Intelligent Action
+
+| Component | Datadog (Monitoring) | SentinelNet (Action Intelligence) |
+|-----------|---------------------|----------------------------------|
+| **Data Collection** | ✅ Metrics, logs, traces | ❌ (Uses Datadog data) |
+| **Alert Generation** | ✅ Threshold-based alerts | ❌ (Processes Datadog alerts) |
+| **Visualization** | ✅ Rich dashboards | ✅ Action-focused triage UI |
+| **Root Cause Analysis** | ⚠️ Manual correlation | ✅ AI-powered dependency analysis |
+| **Remediation Planning** | ❌ Alert-only | ✅ Multi-step recovery strategies |
+| **Automated Execution** | ❌ Manual processes | ✅ Human-approved automation |
+| **Cost Analysis** | ❌ Basic cost monitoring | ✅ Reconfiguration cost-benefit |
+
+**SentinelNet enhances Datadog by adding the "What should we do?" and "Do it safely" layers that traditional monitoring lacks.**
+
+## 🔄 Automated Reconfiguration Examples
+
+### BigQuery Regional Failover
+```
+Outage Detected: BigQuery US-east-1 unavailable
+↓
+AI Analysis: Identifies 15 applications using this region
+↓
+Safe Reconfiguration Plan:
+  • Generate BigQuery dataset replication commands
+  • Create Terraform configuration for region switching
+  • Validate data consistency and replication lag
+  • Estimate costs: $50 downtime cost vs $200 cross-region transfer
+↓
+Human Approval: SRE reviews risk assessment and approves
+↓
+Execution: Automated Terraform apply with monitoring
+↓
+Verification: Confirm applications working in new region
+↓
+Rollback: Automated revert if issues detected
+```
+
+### Safe Reconfiguration Boundaries
+- **What We Automate**: Dataset replication, endpoint switching, configuration updates
+- **What Requires Human Approval**: Cost analysis, business logic validation, final execution
+- **What We Never Touch**: Production databases, customer data, billing configurations
+- **Safety Measures**: Comprehensive validation, cost estimation, rollback planning
+
+### Vertex AI Endpoint Migration
+```
+Outage Detected: Vertex AI prediction endpoint down
+↓
+AI Analysis: Maps affected ML services and dependencies
+↓
+Reconfiguration Plan: Deploy model to backup region
+↓
+Cost-Benefit Analysis: Compare latency vs. availability
+↓
+Human Approval: ML engineer validates model compatibility
+↓
+Execution: Automated endpoint switching with traffic routing
+```
 
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   GCP Agents    │    │   Azure Agents  │    │ Coordination   │
-│                 │    │                 │    │    Layer       │
-│ • BigQuery      │◄──►│ • Blob Storage  │◄──►│ • LangGraph    │
-│ • Vertex AI     │    │ • DevOps        │    │ • Consensus    │
+│    Datadog      │    │   SentinelNet   │    │   Enterprise    │
+│   Monitoring    │───►│   AI Agents     │───►│   Systems       │
+│                 │    │                 │    │                 │
+│ • Real-time     │    │ • LangGraph     │    │ • Terraform     │
+│ • Alerts        │    │ • Impact        │    │ • Kubernetes    │
+│ • Metrics       │    │ • Reconfig      │    │ • Cloud APIs    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
                                  │
                     ┌─────────────────┐
-                    │  User Dashboard │
-                    │    (Offline)    │
+                    │   Action        │
+                    │   Dashboard     │
+                    │                 │
+                    │ • Alert Triage  │
+                    │ • Plan Review   │
+                    │ • Execution     │
                     └─────────────────┘
 ```
 
@@ -90,57 +175,88 @@ sentinelnet/
 
 ### Environment Variables (.env)
 ```bash
-# Google Cloud
+# Datadog Integration
+DATADOG_API_KEY=your-datadog-api-key
+DATADOG_APP_KEY=your-datadog-app-key
+DATADOG_SITE=datadoghq.com  # or datadoghq.eu
+
+# Cloud Platforms (for reconfiguration)
 GOOGLE_CLOUD_PROJECT=your-project-id
 GOOGLE_APPLICATION_CREDENTIALS=./service-account-key.json
 
-# Azure
 AZURE_CLIENT_ID=your-client-id
 AZURE_CLIENT_SECRET=your-client-secret
 AZURE_TENANT_ID=your-tenant-id
+AZURE_SUBSCRIPTION_ID=your-subscription-id
 
-# OpenAI
+# AI Services
 OPENAI_API_KEY=your-openai-api-key
 
 # Application
 DEBUG=true
 DASHBOARD_PORT=8501
+DATABASE_URL=postgresql://localhost/sentinelnet
 ```
 
-### Cloud Setup
+### Datadog Setup
+1. **Create Datadog Account**: Sign up at [datadoghq.com](https://datadoghq.com)
+2. **Get API Keys**: Navigate to Organization Settings → API Keys
+3. **Configure Webhooks**: Set up webhooks to send alerts to SentinelNet
+4. **Install Integrations**: Configure GCP and Azure integrations in Datadog
+
+### Cloud Setup (for Reconfiguration Actions)
 
 #### GCP Always Free Tier
 - BigQuery: 1TB queries/month, 10GB storage
-- Vertex AI: Limited predictions
+- Vertex AI: Limited predictions for AI analysis
 - Cloud Storage: 5GB storage
+- Compute Engine: f1-micro instances for testing
 
 #### Azure Free Services
 - Blob Storage: 5GB hot storage
 - Functions: 1M executions/month
 - DevOps: 5 users, unlimited repos
+- App Service: Basic tier for testing
 
 ## 🎯 Development Phases
 
-### Phase 1: MVP (Weeks 1-8)
-- ✅ Distributed monitoring agents
-- ✅ Anomaly detection and correlation
-- ✅ AI-generated remediation plans
-- ✅ Offline-capable dashboard
-- ✅ One-click setup script
+### Phase 1: Integration & Intelligence (Weeks 1-8)
+- ✅ Datadog API integration for alert consumption
+- ✅ LangGraph agent workflows for alert processing and correlation
+- ✅ Impact analysis engine for dependency mapping
+- ✅ AI-generated remediation plans with safety validation
+- ✅ Human approval dashboard for plan review and execution
+- ✅ One-click setup script with Datadog webhook configuration
 
-### Phase 2: Enterprise Features (Months 3-4)
-- Human-approved automated execution
-- ML-based outage prediction
-- Multi-region support
-- Enterprise alerting
+### Phase 2: Enterprise Automation (Months 3-4)
+- **Multi-Cloud Reconfiguration**:
+  - BigQuery cross-region failover automation
+  - Vertex AI endpoint migration with model validation
+  - Azure Blob Storage geo-redundancy activation
+  - DevOps pipeline region switching
+- **Advanced Intelligence**:
+  - Cost-benefit analysis for reconfiguration decisions
+  - Predictive failure analysis based on historical data
+  - Automated rollback and recovery validation
+  - Multi-step remediation orchestration
+- Enterprise integrations (Slack, PagerDuty, ServiceNow)
 
 ## 🛠️ Technology Stack
 
 ### Core Technologies
-- **LangGraph**: Agent orchestration and workflows
-- **FastAPI**: High-performance API backend
-- **Streamlit**: Interactive dashboard
-- **WebRTC**: P2P communication during outages
+- **Datadog API**: Integration with enterprise monitoring platform
+- **LangGraph**: Agent orchestration for intelligent remediation workflows
+- **FastAPI**: Backend API for agent coordination and Datadog webhooks
+- **Terraform**: Infrastructure automation for safe reconfiguration
+- **Streamlit**: Interactive dashboard for alert triage and plan approval
+- **PostgreSQL**: Store remediation plans, execution history, and cost analysis
+
+### Action Intelligence Engine
+- **Alert Processing**: Parse Datadog webhooks and correlate related alerts
+- **Impact Analysis**: Graph-based dependency mapping and blast radius calculation
+- **Plan Generation**: AI agents create multi-step remediation strategies
+- **Safety Validation**: Automated risk assessment, cost estimation, and rollback planning
+- **Execution Control**: Human-in-the-loop approval with automated execution
 
 ### Cloud & Infrastructure
 - **Google Cloud**: BigQuery, Vertex AI, Cloud Monitoring
@@ -194,25 +310,34 @@ DASHBOARD_PORT=8501
 
 ## 🚦 API Endpoints
 
-### Health Monitoring
+### Datadog Integration
 ```
-GET /health/services    # Get all service statuses
-GET /health/{service}   # Get specific service health
-POST /health/check      # Manual health check
-```
-
-### Remediation Planning
-```
-POST /remediation/plan     # Generate remediation plan
-GET /remediation/{plan_id} # Get plan details
-POST /remediation/execute  # Execute approved plan (with confirmation)
+POST /webhooks/datadog     # Receive Datadog alerts and trigger analysis
+GET /alerts/{alert_id}     # Get detailed alert information
+POST /alerts/{alert_id}/acknowledge  # Acknowledge alert processing
 ```
 
-### Dashboard Data
+### AI Analysis Engine
 ```
-GET /dashboard/metrics     # Get dashboard metrics
-GET /dashboard/alerts      # Get active alerts
-GET /dashboard/incidents   # Get incident history
+POST /analysis/impact      # Analyze alert impact and dependencies
+POST /analysis/plan        # Generate remediation plan for alert
+GET /analysis/{plan_id}    # Get detailed remediation plan
+POST /analysis/{plan_id}/validate  # Validate plan safety and costs
+```
+
+### Execution Control
+```
+POST /execute/{plan_id}    # Execute approved remediation plan
+POST /execute/{execution_id}/rollback  # Rollback failed execution
+GET /execute/{execution_id}/status     # Get execution status
+```
+
+### Dashboard & Monitoring
+```
+GET /dashboard/alerts      # Get active alerts with AI analysis
+GET /dashboard/plans       # Get pending remediation plans
+GET /dashboard/executions  # Get execution history and costs
+GET /dashboard/metrics     # Get system performance metrics
 ```
 
 ## 🤝 Contributing
